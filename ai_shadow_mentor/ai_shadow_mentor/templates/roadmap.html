@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% block title %}Roadmap{% endblock %}{% block content %}
+<h1 class="text-3xl font-bold title-glow text-center mb-6">Personalized Roadmap Generator</h1>
+<form id="f" class="glass p-6 grid md:grid-cols-4 gap-4 items-end">
+ <label>Target role<select id="role" class="inp mt-1"></select></label>
+ <label>Experience<select id="exp" class="inp mt-1"><option>Fresher</option><option>1-3 years</option><option>3-5 years</option><option>5+ years</option></select></label>
+ <label class="md:col-span-1">Current skills<input id="skills" class="inp mt-1" placeholder="Python, SQL"></label>
+ <button class="btn">Generate</button>
+</form>
+{% if not user %}<p class="text-xs text-amber-300 mt-2">Login to save your progress checkmarks.</p>{% endif %}
+<div id="out" class="mt-6 space-y-5"></div>{% endblock %}
+{% block scripts %}<script>
+fillRoles('role');const q=new URLSearchParams(location.search);
+if(q.get('role')){role.value=q.get('role');skills.value=q.get('skills')||'';exp.value=q.get('exp')||'Fresher';setTimeout(()=>f.requestSubmit(),0)}
+const LOGGED={{ 'true' if user else 'false' }};
+f.onsubmit=async e=>{e.preventDefault();
+const d=await post('/api/roadmap',{role:role.value,skills:skills.value,experience:exp.value});
+if(d.error){out.innerHTML=d.error;return}
+let total=0,done=0;
+out.innerHTML=`<div class="glass p-5"><b>${d.analysis.role}</b> · Readiness ${d.analysis.score}% · Estimated <b>${d.estimated_weeks} weeks</b>
+<div class="bar mt-3"><div id="pb" style="width:0"></div></div><p id="pt" class="text-xs text-slate-400 mt-1"></p></div>`+
+d.phases.map(p=>`<div class="glass p-5"><h2 class="font-semibold text-sky-300 mb-3">${p.name}</h2>${p.steps.map(s=>{total++;const c=d.done[s.key];if(c)done++;
+return `<label class="flex gap-3 items-start py-2 border-b border-slate-800 last:border-0"><input type="checkbox" class="mt-1 accent-sky-400 step" data-k="${s.key}" ${c?'checked':''}>
+<span><b>${s.skill}</b> — ${s.url?`<a class="text-sky-300 underline" target="_blank" href="${s.url}">${s.resource}</a>`:s.resource}
+<span class="text-xs text-slate-400"> · ${s.duration}</span></span></label>`}).join('')}</div>`).join('');
+const upd=()=>{const n=document.querySelectorAll('.step:checked').length;pb.style.width=(100*n/total)+'%';pt.textContent=`${n}/${total} steps completed`};upd();
+document.querySelectorAll('.step').forEach(c=>c.onchange=async()=>{upd();
+if(!LOGGED){alert('Login to save progress');return}
+await post('/api/progress',{role:role.value,step_key:c.dataset.k,done:c.checked})})};
+</script>{% endblock %}

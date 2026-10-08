@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block content %}
+<div class="glass max-w-md mx-auto p-6">
+ <h1 class="text-2xl font-bold title-glow mb-4">{{ 'Create account' if mode=='register' else 'Login' }}</h1>
+ {% with msgs = get_flashed_messages(with_categories=true) %}{% for c,m in msgs %}<p class="text-red-400 text-sm mb-2">{{ m }}</p>{% endfor %}{% endwith %}
+ <form method="post" class="space-y-3">
+  {% if mode=='register' %}<input name="name" class="inp" placeholder="Full name" required>{% endif %}
+  <input name="email" type="email" class="inp" placeholder="Email" required>
+  <input name="password" type="password" class="inp" placeholder="Password (min 6)" required>
+  <button class="btn w-full">{{ 'Sign up' if mode=='register' else 'Login' }}</button></form>
+ <p class="text-sm mt-4 text-slate-400">{% if mode=='register' %}Have an account? <a class="text-sky-300" href="/login">Login</a>{% else %}New here? <a class="text-sky-300" href="/register">Register</a>{% endif %}</p>
+</div>{% endblock %}

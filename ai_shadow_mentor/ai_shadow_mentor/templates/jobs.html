@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% block title %}Job Insights{% endblock %}{% block content %}
+<h1 class="text-3xl font-bold title-glow text-center mb-6">Job Insights & Salary Predictor</h1>
+<form id="f" class="glass p-6 grid md:grid-cols-3 gap-4 items-end">
+ <label>Role<select id="role" class="inp mt-1"></select></label>
+ <label>Experience<select id="exp" class="inp mt-1"><option>Fresher</option><option>1-3 years</option><option>3-5 years</option><option>5+ years</option></select></label>
+ <button class="btn">Predict</button></form>
+<div id="out" class="mt-6 grid md:grid-cols-2 gap-5"></div>
+<div class="glass p-6 mt-6"><h2 class="font-semibold text-sky-300 mb-3">🔥 Trending AI & Tech Roles</h2><div id="trend" class="space-y-3"></div></div>
+{% endblock %}
+{% block scripts %}<script>
+fillRoles('role');
+fetch('/api/jobs/trending').then(r=>r.json()).then(t=>trend.innerHTML=t.map(x=>`<div><div class="flex justify-between text-sm"><span>${x.role}</span><span class="text-emerald-300">${x.growth}</span></div><div class="bar"><div style="width:${x.demand}%"></div></div></div>`).join(''));
+f.onsubmit=async e=>{e.preventDefault();
+const d=await fetch(`/api/jobs/insights?role=${encodeURIComponent(role.value)}&experience=${encodeURIComponent(exp.value)}`).then(r=>r.json());
+const max=Math.max(...Object.values(d.salary_by_level).map(v=>v.max));
+out.innerHTML=`<div class="glass p-6"><h3 class="text-sky-300 font-semibold">Expected salary (${d.experience})</h3>
+<div class="text-3xl font-bold mt-2">₹${d.salary_lpa.min}–${d.salary_lpa.max} LPA</div><p class="text-sm text-slate-400">Average ₹${d.salary_lpa.avg} LPA · Demand ${d.demand_score}/100 · ${d.growth}</p>
+<h4 class="mt-4 text-sm text-slate-300">Salary by level</h4>${Object.entries(d.salary_by_level).map(([k,v])=>`<div class="text-xs mt-2">${k}: ₹${v.min}–${v.max} LPA<div class="bar"><div style="width:${100*v.max/max}%"></div></div></div>`).join('')}</div>
+<div class="glass p-6"><h3 class="text-sky-300 font-semibold">Top hiring companies</h3><div>${d.top_companies.map(c=>`<span class="tag bg-sky-900 text-sky-200">${c}</span>`).join('')}</div>
+<h3 class="text-sky-300 font-semibold mt-4">Most in-demand skills</h3><div>${d.top_skills.map(c=>`<span class="tag bg-violet-900 text-violet-200">${c}</span>`).join('')}</div>
+${d.live_jobs.length?`<h3 class="text-sky-300 font-semibold mt-4">Live openings</h3>`+d.live_jobs.map(j=>`<p class="text-sm mt-1"><a class="underline text-sky-300" target="_blank" href="${j.url}">${j.title}</a> — ${j.company||''} (${j.location||''})</p>`).join(''):'<p class="text-xs text-slate-500 mt-4">Add Adzuna keys in .env to show live openings.</p>'}</div>`};
+f.requestSubmit();
+</script>{% endblock %}

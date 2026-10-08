@@ -1,0 +1,12 @@
+body{background:radial-gradient(ellipse at top,#0f2547 0%,#050b18 70%) fixed;color:#e2e8f0;min-height:100vh}
+.glass{background:rgba(15,28,53,.75);border:1px solid rgba(56,189,248,.18);border-radius:1rem;backdrop-filter:blur(8px)}
+.card-link{transition:.25s}.card-link:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(56,189,248,.2)}
+.title-glow{color:#38bdf8;text-shadow:0 0 18px rgba(56,189,248,.45)}
+.inp{width:100%;padding:.6rem .8rem;border-radius:.5rem;background:#0b1630;border:1px solid #1e3a5f;color:#e2e8f0}
+.inp:focus{outline:2px solid #38bdf8}
+.btn{background:#38bdf8;color:#041021;font-weight:600;padding:.6rem 1.2rem;border-radius:.5rem;transition:.2s}
+.btn:hover{background:#7dd3fc}
+.bar{height:10px;border-radius:99px;background:#0b1630;overflow:hidden}.bar>div{height:100%;background:linear-gradient(90deg,#38bdf8,#a78bfa);transition:width .8s}
+.bubble-bot{background:linear-gradient(135deg,#7c3aed,#5b21b6);border-radius:1rem 1rem 1rem .25rem}
+.bubble-user{background:#38bdf8;color:#041021;border-radius:1rem 1rem .25rem 1rem}
+.tag{display:inline-block;padding:.15rem .6rem;border-radius:99px;font-size:.78rem;margin:.15rem}

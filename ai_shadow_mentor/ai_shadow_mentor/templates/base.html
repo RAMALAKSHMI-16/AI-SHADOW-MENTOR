@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}AI Shadow Mentor{% endblock %}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head><body>
+<nav class="bg-slate-900/90 border-b border-sky-900 sticky top-0 z-10">
+ <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+  <a href="/" class="font-bold text-lg text-sky-300">🤖 AI Shadow Mentor</a>
+  <div class="flex gap-4 text-sm items-center flex-wrap">
+   <a href="/" class="hover:text-sky-300">Home</a>
+   <a href="/analyzer" class="hover:text-sky-300">Skill Gap</a>
+   <a href="/roadmap" class="hover:text-sky-300">Roadmap</a>
+   <a href="/jobs" class="hover:text-sky-300">Job Insights</a>
+   <a href="/chatbot" class="hover:text-sky-300">Chatbot</a>
+   <a href="/about" class="hover:text-sky-300">About</a>
+   {% if user %}<span class="text-sky-200">Hi, {{ user.name.split()[0] }}</span><a href="/logout" class="text-red-300">Logout</a>
+   {% else %}<a href="/login" class="btn !py-1">Login</a>{% endif %}
+  </div></div></nav>
+<main class="max-w-6xl mx-auto px-4 py-8">{% block content %}{% endblock %}</main>
+<footer class="text-center text-xs text-slate-500 py-6">Team Dream Finder · AI Shadow Mentor</footer>
+<script>const ROLES={{ roles|tojson }};
+function fillRoles(id){const s=document.getElementById(id);ROLES.forEach(r=>s.add(new Option(r,r)))}
+const post=(u,b)=>fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}).then(r=>r.json());</script>
+{% block scripts %}{% endblock %}
+</body></html>

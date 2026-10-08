@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% block content %}
+<section class="text-center py-10">
+ <h1 class="text-4xl md:text-5xl font-bold title-glow">Welcome to AI Shadow Mentor 🚀</h1>
+ <p class="mt-3 text-slate-300">Your personalized AI career guide for discovering the right path, building skills, and unlocking your potential.</p>
+</section>
+<section class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+ {% for icon,t,d,l in [('🎯','Career Path & Skill Gap Analyzer','Identify your strengths, weaknesses and skills needed.','/analyzer'),('🗺️','Personalized Roadmap Generator','Get a step-by-step learning plan tailored to your goal.','/roadmap'),('💼','Job Insights & Salary Predictor','Explore live job trends and salary expectations.','/jobs'),('💬','AI Mentor Chatbot','Instant advice and career guidance 24/7.','/chatbot')] %}
+ <a href="{{ l }}" class="glass card-link p-5 text-center block"><div class="text-4xl">{{ icon }}</div><h3 class="font-semibold mt-2 text-sky-300">{{ t }}</h3><p class="text-sm text-slate-300 mt-1">{{ d }}</p></a>
+ {% endfor %}
+</section>
+{% if user %}
+<section id="dash" class="glass p-5 mt-8 hidden"><h2 class="font-semibold text-sky-300 mb-3">📈 Your Progress</h2><div id="dashBody"></div></section>
+{% endif %}
+{% endblock %}
+{% block scripts %}{% if user %}<script>
+fetch('/api/dashboard').then(r=>r.json()).then(d=>{if(!d.profile)return;
+document.getElementById('dash').classList.remove('hidden');
+const pct=d.steps_total?Math.round(100*d.steps_done/d.steps_total):0;
+document.getElementById('dashBody').innerHTML=`<p>Target: <b>${d.profile.role}</b> · Readiness: <b>${d.score}%</b></p>
+<p class="text-sm text-slate-400 mt-1">Roadmap steps done: ${d.steps_done}/${d.steps_total}</p><div class="bar mt-2"><div style="width:${pct}%"></div></div>`})
+</script>{% endif %}{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}{% block title %}Skill Gap Analyzer{% endblock %}{% block content %}
+<h1 class="text-3xl font-bold title-glow text-center mb-6">Career Path & Skill Gap Analyzer</h1>
+<div class="grid md:grid-cols-2 gap-6">
+<form id="f" class="glass p-6 space-y-4">
+ <label class="block">Target role<select id="role" class="inp mt-1"></select></label>
+ <label class="block">Experience<select id="exp" class="inp mt-1"><option>Fresher</option><option>1-3 years</option><option>3-5 years</option><option>5+ years</option></select></label>
+ <label class="block">Your current skills <span class="text-xs text-slate-400">(comma separated)</span>
+ <textarea id="skills" rows="4" class="inp mt-1" placeholder="Python, SQL, Statistics, Git"></textarea></label>
+ <button class="btn w-full">Analyze My Skills</button>
+</form>
+<div id="out" class="glass p-6"><p class="text-slate-400">Your analysis will appear here.</p></div>
+</div>{% endblock %}
+{% block scripts %}<script>
+fillRoles('role');
+f.onsubmit=async e=>{e.preventDefault();
+const d=await post('/api/analyze',{role:role.value,skills:skills.value,experience:exp.value});
+if(d.error){out.innerHTML=`<p class="text-red-400">${d.error}</p>`;return}
+out.innerHTML=`<h2 class="font-semibold text-sky-300">Readiness for ${d.role}</h2>
+<div class="text-4xl font-bold mt-2">${d.score}%</div><div class="bar my-2"><div style="width:${d.score}%"></div></div>
+<p class="text-sm text-slate-300">${d.verdict}</p>
+<h3 class="mt-4 font-medium text-emerald-300">✅ Skills you have</h3><div>${d.matched.map(s=>`<span class="tag bg-emerald-900 text-emerald-200">${s}</span>`).join('')||'<span class="text-slate-400 text-sm">None matched yet</span>'}</div>
+<h3 class="mt-4 font-medium text-amber-300">⚠️ Missing skills</h3><div>${d.missing.map(m=>`<span class="tag ${m.priority=='High'?'bg-red-900 text-red-200':m.priority=='Medium'?'bg-amber-900 text-amber-200':'bg-slate-700 text-slate-200'}" title="${m.level}">${m.skill} · ${m.priority}</span>`).join('')||'<span class="text-sm">Nothing missing 🎉</span>'}</div>
+<a class="btn inline-block mt-5" href="/roadmap?role=${encodeURIComponent(d.role)}&skills=${encodeURIComponent(skills.value)}&exp=${encodeURIComponent(exp.value)}">Generate Roadmap →</a>`};
+</script>{% endblock %}
